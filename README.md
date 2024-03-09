@@ -1,2 +1,2 @@
 # Codigos
-Códigos de utilidad en distintos idiomas
+Códigos de utilidad en distintos lenguajes
