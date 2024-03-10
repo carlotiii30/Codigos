@@ -1,4 +1,5 @@
 // Juego: debes adivinar el número que ha pensado el programa.
+// Versión 1: Las coincidencias solo comprueban si el dígito está en la posición correcta.
 
 #include <iostream>
 #include <cstdlib>
@@ -7,26 +8,86 @@
 
 using namespace std;
 
-int main()
+/**
+ * @brief Genera un número aleatorio de n cifras.
+ *
+ * @param cifras Cantidad de cifras del número.
+ * @return int Número aleatorio.
+ */
+int generarAleatorio(int cifras)
 {
-    int numero, aleatorio, cifras, coincidencias, intentos = 0;
+    return rand() % (int)pow(10, cifras);
+}
 
-    cout << "¿Cuántas cifras quieres que tenga el número?\n";
-    cin >> cifras;
-
-    int cifrasAleatorio[cifras], cifrasNumero[cifras];
-
-    // Generar número aleatorio
-    srand(time(0));
-    aleatorio = rand() % (int)pow(10, cifras);
-    int copia = aleatorio;
-
-    // Acceder a las cifras del número aleatorio
+/**
+ * @brief Crea un array con las cifras de un número.
+ *
+ * @param aleatorio Número del que se quieren obtener las cifras.
+ * @param cifras Cantidad de cifras del número.
+ * @return int* Array con las cifras del número.
+ */
+int *cifrasAleatorio(int aleatorio, int cifras)
+{
+    int *cifrasAleatorio = new int[cifras];
     for (int i = 0; i < cifras; i++)
     {
         cifrasAleatorio[i] = aleatorio / (int)pow(10, cifras - i - 1);
         aleatorio = aleatorio % (int)pow(10, cifras - i - 1);
     }
+    return cifrasAleatorio;
+}
+
+/**
+ * @brief Crea un array con las cifras de un número.
+ *
+ * @param numero Número del que se quieren obtener las cifras.
+ * @param cifras Cantidad de cifras del número.
+ * @return int* Array con las cifras del número.
+ */
+int *cifrasNumero(int numero, int cifras)
+{
+    int *cifrasNumero = new int[cifras];
+    for (int i = 0; i < cifras; i++)
+    {
+        cifrasNumero[i] = numero / (int)pow(10, cifras - i - 1);
+        numero = numero % (int)pow(10, cifras - i - 1);
+    }
+    return cifrasNumero;
+}
+
+/**
+ * @brief Comprueba las coincidencias entre dos arrays.
+ *
+ * @param arrayAleatorio Array con las cifras del número aleatorio.
+ * @param arrayNumero Array con las cifras del número introducido.
+ * @param cifras Cantidad de cifras del número.
+ * @return int Cantidad de coincidencias.
+ */
+int comprobarCoincidencias(int *arrayAleatorio, int *arrayNumero, int cifras)
+{
+    int coincidencias = 0;
+    for (int i = 0; i < cifras; i++)
+    {
+        if (arrayAleatorio[i] == arrayNumero[i])
+        {
+            coincidencias++;
+        }
+    }
+    return coincidencias;
+}
+
+int main()
+{
+    int numero, aleatorio, cifras, coincidencias, intentos = 0;
+    int *arrayAleatorio, *arrayNumero;
+
+    srand(time(0)); // Inicializar la semilla de números aleatorios
+
+    cout << "¿Cuántas cifras quieres que tenga el número?\n";
+    cin >> cifras;
+
+    aleatorio = generarAleatorio(cifras);
+    arrayAleatorio = cifrasAleatorio(aleatorio, cifras);
 
     while (coincidencias != cifras)
     {
@@ -35,21 +96,10 @@ int main()
         cout << "Adivina el número que he pensado:\n";
         cin >> numero;
 
-        // Acceder a las cifras del número introducido
-        for (int i = 0; i < cifras; i++)
-        {
-            cifrasNumero[i] = numero / (int)pow(10, cifras - i - 1);
-            numero = numero % (int)pow(10, cifras - i - 1);
-        }
+        arrayNumero = cifrasNumero(numero, cifras);
 
         // Comprobar coincidencias
-        for (int i = 0; i < cifras; i++)
-        {
-            if (cifrasAleatorio[i] == cifrasNumero[i])
-            {
-                coincidencias++;
-            }
-        }
+        coincidencias = comprobarCoincidencias(arrayAleatorio, arrayNumero, cifras);
 
         if (coincidencias != cifras)
         {
@@ -58,6 +108,6 @@ int main()
         intentos++;
     }
 
-    cout << "CORRECTO: " << copia << endl;
+    cout << "CORRECTO: " << numero << endl;
     cout << "Numero de intentos: " << intentos << endl;
 }
